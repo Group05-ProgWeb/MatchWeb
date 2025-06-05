@@ -2,6 +2,7 @@ package it.unitn.progweb.team05.matchweb.repositories;
 
 import it.unitn.progweb.team05.matchweb.SecurityUser;
 import it.unitn.progweb.team05.matchweb.User;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,16 @@ public class UserRepository {
     private final JdbcTemplate jdbc;
     private final UserDetailsManager userDetailsManager;
     private final PasswordEncoder passwordEncoder;
+
+    private RowMapper<User> userRowMapper = (r, i) -> {
+        User rowObject = new User();
+        rowObject.setId(r.getInt("ID"));
+        rowObject.setUsername(r.getString("USERNAME"));
+        rowObject.setFirstName(r.getString("FIRST_NAME"));
+        rowObject.setLastName(r.getString("LAST_NAME"));
+        rowObject.setEmail(r.getString("EMAIL"));
+        return rowObject;
+    };
 
     public UserRepository(JdbcTemplate jdbc,
                           UserDetailsManager userDetailsManager,
@@ -30,15 +41,6 @@ public class UserRepository {
 
     public List<User> findAllUsers() {
         String sql = "SELECT * FROM USER_DETAILS";
-        RowMapper<User> userRowMapper = (r, i) -> {
-            User rowObject = new User();
-            rowObject.setId(r.getInt("ID"));
-            rowObject.setUsername(r.getString("USERNAME"));
-            rowObject.setFirstName(r.getString("FIRSTNAME"));
-            rowObject.setLastName(r.getString("LASTNAME"));
-            rowObject.setEmail(r.getString("EMAIL"));
-            return rowObject;
-        };
         return jdbc.query(sql, userRowMapper);
     }
 
@@ -55,6 +57,15 @@ public class UserRepository {
                 user.getSport(),
                 user.getFavoriteTeam()
         );
+    }
+
+    public User getByUsername(String username){
+        String sql = "SELECT * FROM USER_DETAILS WHERE USERNAME = ?";
+        try {
+            return jdbc.queryForObject(sql, userRowMapper, username);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }
 

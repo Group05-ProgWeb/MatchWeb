@@ -1,6 +1,8 @@
 package it.unitn.progweb.team05.matchweb.controllers;
 
+import it.unitn.progweb.team05.matchweb.Review;
 import it.unitn.progweb.team05.matchweb.User;
+import it.unitn.progweb.team05.matchweb.repositories.ReviewRepository;
 import it.unitn.progweb.team05.matchweb.repositories.UserRepository;
 import it.unitn.progweb.team05.matchweb.services.UserService;
 import org.springframework.security.core.Authentication;
@@ -17,10 +19,12 @@ public class MainController {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ReviewRepository reviewRepository;
 
-    public MainController(UserRepository userRepository, UserService userService) {
+    public MainController(UserRepository userRepository, UserService userService, ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.userService = userService;
+        this.reviewRepository = reviewRepository;
     }
 
     @GetMapping("/")
@@ -102,8 +106,24 @@ public class MainController {
     public String play() {return "play";}
 
     @GetMapping("/reviews")
-    public String comments() {
+    public String comments(Model model) {
+        model.addAttribute("reviews", reviewRepository.getAll());
         return "reviews";
     }
+
+    @PostMapping("/reviews")
+    public String postReview(@RequestParam("comment") String comment,
+                             @RequestParam("rating") int rating, Authentication authentication) {
+        reviewRepository.add(
+                new Review(
+                    userRepository.getByUsername(authentication.getName()).getId(),
+                    comment,
+                    rating
+                )
+        );
+
+        return "redirect:/reviews";
+    }
+
 
 }

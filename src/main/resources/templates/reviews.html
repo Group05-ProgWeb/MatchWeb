@@ -1,13 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Recensioni</title>
 </head>
 <body>
-    <div th:replace="~{fragments/navbar.html :: navbar}"></div>
-        <h1>Recensioni</h1>
-        <p>*recensioni*</p>
-    <div th:replace="~{fragments/news.html :: news}"></div>
+<div th:replace="~{fragments/navbar.html :: navbar}"></div>
+
+<h1>Recensioni</h1>
+
+<!-- List existing reviews -->
+<ul>
+    <li th:each="review : ${reviews}">
+        <p><strong>Rating:</strong> <span th:text="${review.score}"></span></p>
+        <p th:text="${review.text}"></p>
+        <hr>
+    </li>
+</ul>
+
+<!-- Form to add a new review -->
+<h2>Submit a Review</h2>
+<form action="#" th:action="@{/reviews}" method="post">
+    <label for="comment">Comment:</label><br>
+    <textarea id="comment" name="comment" rows="4" cols="50" required></textarea><br>
+
+    <label for="rating">Rating (1 to 5):</label><br>
+    <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
+
+    <button type="submit">Submit Review</button>
+</form>
+
+<div th:replace="~{fragments/news.html :: news}"></div>
 </body>
 </html>
