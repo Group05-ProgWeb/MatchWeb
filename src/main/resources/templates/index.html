@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+</head>
+<body style="height: 100vh">
+    <div th:replace="~{fragments/navbar.html :: navbar}"></div>
+    <h1>PartiteWeb</h1>
+    <p>Ciao, benvenuto in PartiteWeb!</p>
+    <ul>
+        <li><a href="/football">Calcio</a></li>
+        <li><a href="/basketball">Basket</a></li>
+        <li><a href="/volleyball">Pallavvolo</a></li>
+    </ul>
+    <div th:replace="~{fragments/footer.html :: footer}"></div>
+    <div th:replace="~{fragments/news.html :: news}"></div>
+</body>
+</html>
