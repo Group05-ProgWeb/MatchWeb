@@ -1,2 +1,13 @@
 -cambiare link dashboard in bottoni? con bootstrap?
 -usare DTOs?
+
+
+vale:
+-finire reviews
+-news
+-dashboard admin
+-ratings.js
+-frontend
+
+cifa:
+-finire partiteWeb e parte giocata schedine

@@ -7,6 +7,7 @@
 <body>
     <div th:replace="~{fragments/navbar.html :: navbar}"></div>
         <h1>Dashboard</h1>
+        <p>Ciao, <span th:text="${firstName}">User</span>!</p>
         <a href="/profile">Visualizza Profilo</a>
         <a href="/game-calendar">Visualizza Calendario Partite</a>
         <a href="/play">Gioca Schedina</a>

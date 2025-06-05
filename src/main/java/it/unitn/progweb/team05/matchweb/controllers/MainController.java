@@ -3,7 +3,9 @@ package it.unitn.progweb.team05.matchweb.controllers;
 import it.unitn.progweb.team05.matchweb.User;
 import it.unitn.progweb.team05.matchweb.repositories.UserRepository;
 import it.unitn.progweb.team05.matchweb.services.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -85,7 +87,10 @@ public class MainController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard() {return "dashboard";}
+    public String dashboard(Authentication authentiation, Model model) {
+        model.addAttribute("firstName", authentiation.getName());
+        return "dashboard";
+    }
 
     @GetMapping("/profile")
     public String profile() {return "profile";}
