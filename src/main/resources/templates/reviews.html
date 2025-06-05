@@ -1,35 +1,168 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Recensioni</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        .star-rating {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        .star-rating .fa-star {
+            color: #ddd;
+        }
+        .star-rating .fa-star.selected,
+        .star-rating .fa-star.hovered {
+            color: #ffc107; /* Bootstrap's warning color */
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments/navbar.html :: navbar}"></div>
 
-<h1>Recensioni</h1>
+<main class="container my-5" style="max-width: 800px;">
+    <h1 class="mb-4">Recensioni</h1>
 
-<!-- List existing reviews -->
-<ul>
-    <li th:each="review : ${reviews}">
-        <p><strong>Rating:</strong> <span th:text="${review.score}"></span></p>
-        <p th:text="${review.text}"></p>
-        <hr>
-    </li>
-</ul>
+    <!-- List existing reviews -->
+    <div class="mb-5">
+        <div
+                class="card mb-3"
+                th:each="review : ${reviews}"
+                style="max-width: 100%;"
+        >
+            <div class="card-body">
+                <div>
+            <span th:each="i : ${#numbers.sequence(1,5)}">
+              <i class="fa-star"
+                 th:classappend="${i <= review.score} ? 'fas text-warning' : 'far text-muted'"></i>
+            </span>
+                </div>
+                <p class="card-text mt-2" th:text="${review.text}">Review text here</p>
+            </div>
+        </div>
+    </div>
 
-<!-- Form to add a new review -->
-<h2>Submit a Review</h2>
-<form action="#" th:action="@{/reviews}" method="post">
-    <label for="comment">Comment:</label><br>
-    <textarea id="comment" name="comment" rows="4" cols="50" required></textarea><br>
+    <!-- Form to add a new review -->
+    <h2 class="mb-3">Submit a Review</h2>
+    <form
+            action="#"
+            th:action="@{/reviews}"
+            method="post"
+            class="needs-validation"
+            novalidate
+    >
+        <div class="mb-3">
+            <label for="comment" class="form-label">Comment:</label>
+            <textarea
+                    id="comment"
+                    name="comment"
+                    rows="4"
+                    class="form-control"
+                    required
+            ></textarea>
+            <div class="invalid-feedback">Please enter a comment.</div>
+        </div>
 
-    <label for="rating">Rating (1 to 5):</label><br>
-    <input type="number" id="rating" name="rating" min="1" max="5" required><br><br>
+        <div class="mb-4">
+            <label class="form-label">Rating (1 to 5):</label>
+            <div id="starContainer" class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
+                <i class="far fa-star" data-value="1" tabindex="0" role="radio" aria-checked="false" aria-label="1 star"></i>
+                <i class="far fa-star" data-value="2" tabindex="0" role="radio" aria-checked="false" aria-label="2 stars"></i>
+                <i class="far fa-star" data-value="3" tabindex="0" role="radio" aria-checked="false" aria-label="3 stars"></i>
+                <i class="far fa-star" data-value="4" tabindex="0" role="radio" aria-checked="false" aria-label="4 stars"></i>
+                <i class="far fa-star" data-value="5" tabindex="0" role="radio" aria-checked="false" aria-label="5 stars"></i>
+            </div>
+            <input type="hidden" id="rating" name="rating" required>
+            <div class="invalid-feedback">Please enter a rating between 1 and 5.</div>
+        </div>
 
-    <button type="submit">Submit Review</button>
-</form>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+</main>
 
 <div th:replace="~{fragments/news.html :: news}"></div>
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+></script>
+
+<script>
+    (() => {
+        "use strict";
+
+        // Bootstrap form validation
+        const forms = document.querySelectorAll(".needs-validation");
+        Array.from(forms).forEach((form) => {
+            form.addEventListener(
+                "submit",
+                (event) => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add("was-validated");
+                },
+                false
+            );
+        });
+
+        // Star rating logic
+        const stars = document.querySelectorAll("#starContainer i");
+        const ratingInput = document.getElementById("rating");
+        let selectedRating = 0;
+
+        function setStars(rating) {
+            stars.forEach((star) => {
+                const val = parseInt(star.getAttribute("data-value"), 10);
+                if (val <= rating) {
+                    star.classList.add("selected");
+                    star.classList.remove("hovered");
+                    star.setAttribute("aria-checked", "true");
+                } else {
+                    star.classList.remove("selected");
+                    star.setAttribute("aria-checked", "false");
+                }
+            });
+        }
+
+        stars.forEach((star) => {
+            star.addEventListener("click", () => {
+                selectedRating = parseInt(star.getAttribute("data-value"), 10);
+                ratingInput.value = selectedRating;
+                setStars(selectedRating);
+            });
+
+            star.addEventListener("mouseover", () => {
+                const hoverValue = parseInt(star.getAttribute("data-value"), 10);
+                stars.forEach((s) => {
+                    const val = parseInt(s.getAttribute("data-value"), 10);
+                    if (val <= hoverValue) {
+                        s.classList.add("hovered");
+                    } else {
+                        s.classList.remove("hovered");
+                    }
+                });
+            });
+
+            star.addEventListener("mouseout", () => {
+                stars.forEach((s) => s.classList.remove("hovered"));
+                setStars(selectedRating);
+            });
+
+            // Accessibility: allow keyboard selection with Enter or Space
+            star.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    star.click();
+                }
+            });
+        });
+    })();
+</script>
 </body>
 </html>
