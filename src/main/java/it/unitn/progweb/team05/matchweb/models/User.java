@@ -1,4 +1,4 @@
-package it.unitn.progweb.team05.matchweb;
+package it.unitn.progweb.team05.matchweb.models;
 
 import java.sql.Date;
 
@@ -13,6 +13,7 @@ public class User {
     private String sport;
     private String favoriteTeam;
     private String role;
+    private long totalScore;
 
     public User() {
         this.id = 0;
@@ -22,6 +23,7 @@ public class User {
         this.username = "";
         this.password = "";
         this.role = "";
+        this.totalScore = 0;
     }
 
     public User(String firstName, String lastName, String email, String username, String password, String role) {
@@ -53,7 +55,7 @@ public class User {
     public String getPassword() {return password;}
 
     public Date getDateOfBirth() {return dateOfBirth;}
-    public void setDate0fBirth(Date dateOfBirth) {this.dateOfBirth = dateOfBirth;}
+    public void setDateOfBirth(Date dateOfBirth) {this.dateOfBirth = dateOfBirth;}
 
     public String getSport() {return sport;}
     public void setSport(String sport) {this.sport = sport;}
@@ -63,4 +65,7 @@ public class User {
 
     public void setRole(String role) {this.role = role;}
     public String getRole() {return role;}
+
+    public long getTotalScore() {return totalScore;}
+    public void setTotalScore(long totalScore) {this.totalScore = totalScore;}
 }

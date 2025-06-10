@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS USER_DETAILS (
     email VARCHAR(100),
     sport VARCHAR(20),
     favorite_team VARCHAR(20),
+    total_score BIGINT DEFAULT 0,
     CONSTRAINT fk_details_user FOREIGN KEY (username) REFERENCES USERS (username)
 );
 
@@ -30,4 +31,8 @@ CREATE TABLE IF NOT EXISTS REVIEWS(
     author_id INT REFERENCES USERS(id),
     text VARCHAR(500),
     score INT
+);
+
+CREATE TABLE IF NOT EXISTS GIORNATE(
+    matchday INT PRIMARY KEY
 );

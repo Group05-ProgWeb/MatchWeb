@@ -1,6 +1,6 @@
 package it.unitn.progweb.team05.matchweb.repositories;
 
-import it.unitn.progweb.team05.matchweb.Review;
+import it.unitn.progweb.team05.matchweb.models.Review;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;

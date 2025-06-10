@@ -1,7 +1,7 @@
 package it.unitn.progweb.team05.matchweb.repositories;
 
-import it.unitn.progweb.team05.matchweb.SecurityUser;
-import it.unitn.progweb.team05.matchweb.User;
+import it.unitn.progweb.team05.matchweb.models.SecurityUser;
+import it.unitn.progweb.team05.matchweb.models.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,7 +23,11 @@ public class UserRepository {
         rowObject.setUsername(r.getString("USERNAME"));
         rowObject.setFirstName(r.getString("FIRST_NAME"));
         rowObject.setLastName(r.getString("LAST_NAME"));
+        rowObject.setDateOfBirth(r.getDate("DATE_OF_BIRTH"));
         rowObject.setEmail(r.getString("EMAIL"));
+        rowObject.setSport(r.getString("SPORT"));
+        rowObject.setFavoriteTeam(r.getString("FAVORITE_TEAM"));
+        rowObject.setTotalScore(r.getInt("TOTAL_SCORE"));
         return rowObject;
     };
 
@@ -47,7 +51,7 @@ public class UserRepository {
     public void add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDetailsManager.createUser(new SecurityUser(user));
-        String sql = "INSERT INTO USER_DETAILS VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO USER_DETAILS VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, DEFAULT)";
         jdbc.update(sql,
                 user.getUsername(),
                 user.getFirstName(),
@@ -59,13 +63,18 @@ public class UserRepository {
         );
     }
 
-    public User getByUsername(String username){
+    public User get(String username){
         String sql = "SELECT * FROM USER_DETAILS WHERE USERNAME = ?";
         try {
             return jdbc.queryForObject(sql, userRowMapper, username);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public void updateScoreByUsername(String username, long total_score) {
+        String sql = "UPDATE USER_DETAILS SET TOTAL_SCORE = ? WHERE USERNAME = ?";
+        jdbc.update(sql, total_score, username);
     }
 }
 

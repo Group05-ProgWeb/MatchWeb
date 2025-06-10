@@ -1,4 +1,4 @@
-package it.unitn.progweb.team05.matchweb;
+package it.unitn.progweb.team05.matchweb.models;
 
 public class Review {
     private int author_id;

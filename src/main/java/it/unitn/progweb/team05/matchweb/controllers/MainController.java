@@ -1,30 +1,48 @@
 package it.unitn.progweb.team05.matchweb.controllers;
 
-import it.unitn.progweb.team05.matchweb.Review;
-import it.unitn.progweb.team05.matchweb.User;
+import it.unitn.progweb.team05.matchweb.exceptions.MultipleBetslipsException;
+import it.unitn.progweb.team05.matchweb.feign.PartiteWebClient;
+import it.unitn.progweb.team05.matchweb.models.*;
+import it.unitn.progweb.team05.matchweb.repositories.GiornataRepository;
 import it.unitn.progweb.team05.matchweb.repositories.ReviewRepository;
 import it.unitn.progweb.team05.matchweb.repositories.UserRepository;
+import it.unitn.progweb.team05.matchweb.services.CalcolaPunteggio;
+import it.unitn.progweb.team05.matchweb.services.MatchService;
 import it.unitn.progweb.team05.matchweb.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.List;
 
 @Controller
 public class MainController {
 
     private final UserRepository userRepository;
-    private final UserService userService;
     private final ReviewRepository reviewRepository;
+    private final GiornataRepository giornataRepository;
+    private final UserService userService;
+    private final MatchService matchService;
+    private final CalcolaPunteggio calcolaPunteggio;
+    private final PartiteWebClient partiteWebClient;
 
-    public MainController(UserRepository userRepository, UserService userService, ReviewRepository reviewRepository) {
+    public MainController(UserRepository userRepository,
+                          UserService userService,
+                          ReviewRepository reviewRepository,
+                          MatchService matchService,
+                          CalcolaPunteggio calcolaPunteggio,
+                          GiornataRepository giornataRepository, PartiteWebClient partiteWebClient) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.reviewRepository = reviewRepository;
+        this.matchService = matchService;
+        this.calcolaPunteggio = calcolaPunteggio;
+        this.giornataRepository = giornataRepository;
+        this.partiteWebClient = partiteWebClient;
     }
 
     @GetMapping("/")
@@ -38,15 +56,17 @@ public class MainController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestParam("name") String name, @RequestParam("surname") String surname, @RequestParam("dateOfBirth") Date dateOfBirth, @RequestParam("email") String email, @RequestParam("username") String username, @RequestParam("password") String password) {
+    public String signup(@RequestParam("name") String name, @RequestParam("surname") String surname, @RequestParam("dateOfBirth") Date dateOfBirth, @RequestParam("email") String email, @RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("sport") String sport, @RequestParam("favoriteTeam") String favoriteTeam) {
         User user = new User();
         user.setFirstName(name);
         user.setLastName(surname);
-        user.setDate0fBirth(dateOfBirth);
+        user.setDateOfBirth(dateOfBirth);
         user.setEmail(email);
         user.setUsername(username);
         user.setPassword(password);
         user.setRole("ROLE_USER");
+        user.setSport(sport);
+        user.setFavoriteTeam(favoriteTeam);
         userRepository.add(user);
         return "signup-success";
     }
@@ -71,7 +91,8 @@ public class MainController {
     }
 
     @GetMapping("/football")
-    public String football() {
+    public String football(Model model) {
+        model.addAttribute("teams", partiteWebClient.getTeams());
         return "teams/football";
     }
 
@@ -91,8 +112,8 @@ public class MainController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Authentication authentiation, Model model) {
-        model.addAttribute("firstName", authentiation.getName());
+    public String dashboard(Authentication authentication, Model model) {
+        model.addAttribute("firstName", authentication.getName());
         return "dashboard";
     }
 
@@ -103,7 +124,23 @@ public class MainController {
     public String gameCalendar() {return "game-calendar";}
 
     @GetMapping("/play")
-    public String play() {return "play";}
+    public String play(Model model) {
+        List<MatchDTO> matches = matchService.getMatchesFromCurrentMatchDay();
+        model.addAttribute("matchday", matchService.getCurrentMatchDay());
+        model.addAttribute("matches", matches);
+        return "play";
+    }
+
+    @PostMapping("/play")
+    @ResponseBody
+    public ResponseEntity<?> play(@RequestBody BetSlip betSlip) {
+        try {
+            return ResponseEntity.ok(calcolaPunteggio.evaluateBetSlip(betSlip));
+        } catch (MultipleBetslipsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Limit of one betslip per day exceeded");
+        }
+
+    }
 
     @GetMapping("/reviews")
     public String comments(Model model) {
@@ -116,7 +153,7 @@ public class MainController {
                              @RequestParam("rating") int rating, Authentication authentication) {
         reviewRepository.add(
                 new Review(
-                    userRepository.getByUsername(authentication.getName()).getId(),
+                    userRepository.get(authentication.getName()).getId(),
                     comment,
                     rating
                 )
@@ -124,6 +161,4 @@ public class MainController {
 
         return "redirect:/reviews";
     }
-
-
 }

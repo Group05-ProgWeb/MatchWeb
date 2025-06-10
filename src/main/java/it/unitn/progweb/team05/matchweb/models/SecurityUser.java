@@ -1,4 +1,4 @@
-package it.unitn.progweb.team05.matchweb;
+package it.unitn.progweb.team05.matchweb.models;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
