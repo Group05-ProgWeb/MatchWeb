@@ -28,6 +28,44 @@
 <main class="container my-5" style="max-width: 800px;">
     <h1 class="mb-4">Recensioni</h1>
 
+
+
+    <!-- Form to add a new review -->
+    <h3 class="mb-3">Inserisci una recensione</h3>
+    <form
+            action="#"
+            th:action="@{/reviews}"
+            method="post"
+            class="needs-validation"
+            novalidate
+    >
+        <div class="mb-4">
+            <div id="starContainer" class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
+                <i class="far fa-star" data-value="1" tabindex="0" role="radio" aria-checked="false" aria-label="1 star"></i>
+                <i class="far fa-star" data-value="2" tabindex="0" role="radio" aria-checked="false" aria-label="2 stars"></i>
+                <i class="far fa-star" data-value="3" tabindex="0" role="radio" aria-checked="false" aria-label="3 stars"></i>
+                <i class="far fa-star" data-value="4" tabindex="0" role="radio" aria-checked="false" aria-label="4 stars"></i>
+                <i class="far fa-star" data-value="5" tabindex="0" role="radio" aria-checked="false" aria-label="5 stars"></i>
+            </div>
+            <input type="hidden" id="rating" name="rating" required>
+            <div class="invalid-feedback">Please enter a rating between 1 and 5.</div>
+        </div>
+        <div class="mb-3">
+            <textarea
+                    id="comment"
+                    name="comment"
+                    rows="4"
+                    class="form-control"
+                    required
+            ></textarea>
+            <div class="invalid-feedback">Please enter a comment.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Invia</button>
+    </form>
+
+    <hr/>
+
     <!-- List existing reviews -->
     <div class="mb-5">
         <div
@@ -46,43 +84,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Form to add a new review -->
-    <h2 class="mb-3">Submit a Review</h2>
-    <form
-            action="#"
-            th:action="@{/reviews}"
-            method="post"
-            class="needs-validation"
-            novalidate
-    >
-        <div class="mb-3">
-            <label for="comment" class="form-label">Comment:</label>
-            <textarea
-                    id="comment"
-                    name="comment"
-                    rows="4"
-                    class="form-control"
-                    required
-            ></textarea>
-            <div class="invalid-feedback">Please enter a comment.</div>
-        </div>
-
-        <div class="mb-4">
-            <label class="form-label">Rating (1 to 5):</label>
-            <div id="starContainer" class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
-                <i class="far fa-star" data-value="1" tabindex="0" role="radio" aria-checked="false" aria-label="1 star"></i>
-                <i class="far fa-star" data-value="2" tabindex="0" role="radio" aria-checked="false" aria-label="2 stars"></i>
-                <i class="far fa-star" data-value="3" tabindex="0" role="radio" aria-checked="false" aria-label="3 stars"></i>
-                <i class="far fa-star" data-value="4" tabindex="0" role="radio" aria-checked="false" aria-label="4 stars"></i>
-                <i class="far fa-star" data-value="5" tabindex="0" role="radio" aria-checked="false" aria-label="5 stars"></i>
-            </div>
-            <input type="hidden" id="rating" name="rating" required>
-            <div class="invalid-feedback">Please enter a rating between 1 and 5.</div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit Review</button>
-    </form>
 </main>
 
 <div th:replace="~{fragments/news.html :: news}"></div>

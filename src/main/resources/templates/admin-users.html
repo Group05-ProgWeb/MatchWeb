@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lista Utenti</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+    />
+</head>
+<body>
+<div th:replace="~{fragments/navbar-admin.html :: navbar-admin}"></div>
+
+<main class="container my-5">
+    <h1 class="mb-4">Lista Utenti</h1>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Username</th>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Email</th>
+            <th>Sport</th>
+            <th>Team Preferito</th>
+            <th>Punteggio Totale</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}">username</td>
+            <td th:text="${user.firstName}">nome</td>
+            <td th:text="${user.lastName}">cognome</td>
+            <td th:text="${user.email}">email</td>
+            <td th:text="${user.sport}">sport</td>
+            <td th:text="${user.favoriteTeam}">team</td>
+            <td th:text="${user.totalScore}">0</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

@@ -49,14 +49,15 @@ public class SecurityConfig {
                  .requestMatchers("/changePassword").hasAnyRole("USER", "MODERATOR")
                  .requestMatchers("/play").hasAnyRole("USER", "MODERATOR")
                  .requestMatchers("/reviews").hasAnyRole("USER", "MODERATOR")
+                 .requestMatchers("/admin/users").hasAnyRole("ADMIN", "MODERATOR")
+                 .requestMatchers("/admin/leaderboard").hasAnyRole("ADMIN", "MODERATOR")
                  .anyRequest().permitAll()
         );
 
         // Logout
         http.logout(c ->
-                c.logoutUrl("/perform_logout") // It is the Spring Security logout endpoint
-                .logoutSuccessUrl("/logout") //Pay attention it is using a GET-redirect under the hood! So, in the Controller you should use @GetMapping
-
+                c.logoutUrl("/logout")
+                .logoutSuccessUrl("/")
         );
 
         // TO DISABLE CSRF PROTECTION

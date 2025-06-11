@@ -46,7 +46,16 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public String index() {
+    public String index(Model model, Authentication authentication) {
+        if(authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("firstName", authentication.getName());
+            if(userRepository.isAdmin(authentication.getName())){
+                return "admin-dashboard";
+            } else {
+                return "dashboard";
+            }
+        }
+
         return "index";
     }
 
@@ -68,7 +77,7 @@ public class MainController {
         user.setSport(sport);
         user.setFavoriteTeam(favoriteTeam);
         userRepository.add(user);
-        return "signup-success";
+        return "redirect:/login";
     }
 
     @GetMapping("/login")
@@ -81,13 +90,14 @@ public class MainController {
 
     @GetMapping("/logout")
     public String logout() {
+
         return "logout";
     }
 
     @PostMapping("/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
         userService.changePassword(oldPassword, newPassword);
-        return "login-success";
+        return "redirect:/";
     }
 
     @GetMapping("/football")
@@ -161,4 +171,20 @@ public class MainController {
 
         return "redirect:/reviews";
     }
+
+    @GetMapping("/admin/users")
+    public String userList(Model model) {
+        List<User> users = userRepository.findAllUsers();
+        model.addAttribute("users", users);
+        return "admin-users";
+    }
+
+    @GetMapping("/admin/leaderboard")
+    public String leaderboard(Model model) {
+        List<User> usersSortedByScore = userRepository.findAllUsersOrderByScoreDesc();
+        model.addAttribute("users", usersSortedByScore);
+        return "admin-leaderboard";
+    }
+
+
 }

@@ -44,7 +44,12 @@ public class UserRepository {
     }
 
     public List<User> findAllUsers() {
-        String sql = "SELECT * FROM USER_DETAILS";
+        String sql = "SELECT * FROM USER_DETAILS ORDER BY FIRST_NAME ASC";
+        return jdbc.query(sql, userRowMapper);
+    }
+
+    public List<User> findAllUsersOrderByScoreDesc() {
+        String sql = "SELECT * FROM USER_DETAILS ORDER BY TOTAL_SCORE DESC";
         return jdbc.query(sql, userRowMapper);
     }
 
@@ -76,6 +81,13 @@ public class UserRepository {
         String sql = "UPDATE USER_DETAILS SET TOTAL_SCORE = ? WHERE USERNAME = ?";
         jdbc.update(sql, total_score, username);
     }
+
+    public boolean isAdmin(String username) {
+        String sql = "SELECT COUNT(*) FROM AUTHORITIES WHERE USERNAME = ? AND AUTHORITY = 'ROLE_ADMIN'";
+        Integer count = jdbc.queryForObject(sql, Integer.class, username);
+        return count != null && count > 0;
+    }
+
 }
 
 
