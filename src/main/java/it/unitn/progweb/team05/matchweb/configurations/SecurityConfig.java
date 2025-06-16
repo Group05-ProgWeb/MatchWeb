@@ -51,6 +51,8 @@ public class SecurityConfig {
                  .requestMatchers("/reviews").hasAnyRole("USER", "MODERATOR")
                  .requestMatchers("/admin/users").hasAnyRole("ADMIN", "MODERATOR")
                  .requestMatchers("/admin/leaderboard").hasAnyRole("ADMIN", "MODERATOR")
+                 .requestMatchers("/admin/prizes").hasAnyRole("ADMIN", "MODERATOR")
+                 .requestMatchers("/admin/upgrade").hasAnyRole("ADMIN", "MODERATOR")
                  .anyRequest().permitAll()
         );
 

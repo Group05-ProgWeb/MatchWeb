@@ -3,9 +3,7 @@ package it.unitn.progweb.team05.matchweb.controllers;
 import it.unitn.progweb.team05.matchweb.exceptions.MultipleBetslipsException;
 import it.unitn.progweb.team05.matchweb.feign.PartiteWebClient;
 import it.unitn.progweb.team05.matchweb.models.*;
-import it.unitn.progweb.team05.matchweb.repositories.GiornataRepository;
-import it.unitn.progweb.team05.matchweb.repositories.ReviewRepository;
-import it.unitn.progweb.team05.matchweb.repositories.UserRepository;
+import it.unitn.progweb.team05.matchweb.repositories.*;
 import it.unitn.progweb.team05.matchweb.services.CalcolaPunteggio;
 import it.unitn.progweb.team05.matchweb.services.MatchService;
 import it.unitn.progweb.team05.matchweb.services.UserService;
@@ -17,7 +15,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
@@ -29,13 +31,19 @@ public class MainController {
     private final MatchService matchService;
     private final CalcolaPunteggio calcolaPunteggio;
     private final PartiteWebClient partiteWebClient;
+    private final PrizeRepository prizeRepository;
+    private final PrizeTypeRepository prizeTypeRepository;
+
 
     public MainController(UserRepository userRepository,
                           UserService userService,
                           ReviewRepository reviewRepository,
                           MatchService matchService,
                           CalcolaPunteggio calcolaPunteggio,
-                          GiornataRepository giornataRepository, PartiteWebClient partiteWebClient) {
+                          GiornataRepository giornataRepository,
+                          PartiteWebClient partiteWebClient,
+                          PrizeRepository prizeRepository,
+                          PrizeTypeRepository prizeTypeRepository) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.reviewRepository = reviewRepository;
@@ -43,6 +51,9 @@ public class MainController {
         this.calcolaPunteggio = calcolaPunteggio;
         this.giornataRepository = giornataRepository;
         this.partiteWebClient = partiteWebClient;
+        this.prizeRepository = prizeRepository;
+        this.prizeTypeRepository = prizeTypeRepository;
+
     }
 
     @GetMapping("/")
@@ -128,7 +139,22 @@ public class MainController {
     }
 
     @GetMapping("/profile")
-    public String profile() {return "profile";}
+    public String profile(Authentication authentication, Model model) {
+        String username = authentication.getName();
+        User user = userRepository.get(username);
+        if (user == null) {
+            return "redirect:/login";
+        }
+        List<Prize> prizes = prizeRepository.findByUserId(user.getId());
+        List<PrizeType> prizeTypes = prizeTypeRepository.findAll();
+        Map<Long, String> prizeTypeNames = prizeTypes.stream()
+                .collect(Collectors.toMap(PrizeType::getId, PrizeType::getName));
+
+        model.addAttribute("prizes", prizes);
+        model.addAttribute("prizeTypeNames", prizeTypeNames);
+
+        return "profile";
+    }
 
     @GetMapping("/game-calendar")
     public String gameCalendar() {return "game-calendar";}
@@ -186,5 +212,54 @@ public class MainController {
         return "admin-leaderboard";
     }
 
+    @GetMapping("/admin/prizes")
+    public String assignPrizesPage() {
+        return "admin-assign-prizes";
+    }
 
+    @PostMapping("/admin/prizes")
+    @ResponseBody
+    public ResponseEntity<List<String>> assignPrizes() {
+        // get top 3 users ordered by score descending
+        List<User> topUsers = userRepository.findAllUsersOrderByScoreDesc()
+                .stream().limit(3).toList();
+
+        List<PrizeType> prizeTypes = prizeTypeRepository.findAll();
+        Collections.shuffle(prizeTypes);
+
+        List<String> awardedMessages = new ArrayList<>();
+
+        for (int i = 0; i < topUsers.size(); i++) {
+            User user = topUsers.get(i);
+            PrizeType prizeType = prizeTypes.get(i % prizeTypes.size());
+
+            Prize prize = new Prize();
+            prize.setUserId(user.getId());
+            prize.setPrizeTypeId(prizeType.getId());
+            prize.setAwardedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+
+            prizeRepository.save(prize);
+
+            awardedMessages.add("🏆 " + user.getFirstName() + " " + user.getLastName()
+                    + " ha ricevuto: " + prizeType.getName());
+        }
+
+        return ResponseEntity.ok(awardedMessages);
+    }
+
+    @GetMapping("/admin/upgrade")
+    public String upgradePage(Model model) {
+        List<User> users = userRepository.findAllNonAdminModerators();
+        model.addAttribute("users", users);
+        return "admin-upgrade";
+    }
+
+    @PostMapping("/admin/upgrade")
+    public String doUpgrade(@RequestParam("userName") String userName, Model model) {
+        userRepository.updateRoleToModerator(userName);
+        model.addAttribute("message", "Utente aggiornato a Moderatore con successo!");
+        List<User> users = userRepository.findAllNonAdminModerators();
+        model.addAttribute("users", users);
+        return "admin-upgrade";
+    }
 }

@@ -1,8 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<body>
-<div th:fragment="news">
-  <p>*news*</p>
+<div id="news-container" class="alert alert-info" role="alert" style="margin-top: auto" th:fragment="news">
+  <span id="news-text">Caricamento news...</span>
+  <script>
+    async function fetchNews() {
+      try {
+        const response = await fetch('/api/news/random');
+        if (!response.ok) throw new Error('Errore nel recupero news');
+        const data = await response.json();
+        document.getElementById('news-text').textContent = data.text;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchNews();
+    setInterval(fetchNews, 30000);
+  </script>
+
 </div>
-</body>
-</html>

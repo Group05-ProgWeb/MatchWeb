@@ -36,3 +36,38 @@ CREATE TABLE IF NOT EXISTS REVIEWS(
 CREATE TABLE IF NOT EXISTS GIORNATE(
     matchday INT PRIMARY KEY
 );
+
+DROP TABLE IF EXISTS prizes_types;
+
+CREATE TABLE IF NOT EXISTS prize_types (
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+     name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS prizes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    prize_type_id BIGINT NOT NULL,
+    awarded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_prize_type FOREIGN KEY (prize_type_id) REFERENCES prize_types(id)
+);
+
+INSERT INTO prize_types (name) VALUES
+   ('Biglietto Partita Squadra del cuore'),
+   ('Magletta Giocatore Squadra del cuore'),
+   ('Serata in pizzera con la squadra del cuore');
+
+DROP TABLE IF EXISTS news;
+
+CREATE TABLE news (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  text VARCHAR(500) NOT NULL
+);
+
+INSERT INTO news (text) VALUES
+    ('A breve inizierà la partita tra Trento e Suedtirol!'),
+    ('Partecipa al nostro concorso per vincere una cena con la tua squadra del cuore!'),
+    ('Cartellino rosso per Mario Rossi: escluso dal campionato'),
+    ('Allerta maltempo: rischio cancellazione partite nelle prossime settimane'),
+    ('Il presidente della federazione annuncia imminenti modifiche al regolamento');

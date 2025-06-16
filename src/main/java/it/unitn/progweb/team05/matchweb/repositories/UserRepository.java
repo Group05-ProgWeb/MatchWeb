@@ -88,6 +88,20 @@ public class UserRepository {
         return count != null && count > 0;
     }
 
+    public List<User> findAllNonAdminModerators() {
+        String sql = """
+        SELECT u.* FROM user_details u
+        JOIN authorities a ON u.username = a.username
+        WHERE a.AUTHORITY NOT IN ('ROLE_ADMIN', 'ROLE_MODERATOR')
+        """;
+
+        return jdbc.query(sql, userRowMapper);
+    }
+
+    public void updateRoleToModerator(String username) {
+        String sql = "UPDATE authorities SET AUTHORITY = 'ROLE_MODERATOR' WHERE username = ?";
+        jdbc.update(sql, username);
+    }
 }
 
 
