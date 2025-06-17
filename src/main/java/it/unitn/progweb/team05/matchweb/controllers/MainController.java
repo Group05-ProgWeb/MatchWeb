@@ -157,7 +157,10 @@ public class MainController {
     }
 
     @GetMapping("/game-calendar")
-    public String gameCalendar() {return "game-calendar";}
+    public String gameCalendar(Model model) {
+        model.addAttribute("matches", partiteWebClient.getMatches(null));
+        return "game-calendar";
+    }
 
     @GetMapping("/play")
     public String play(Model model) {

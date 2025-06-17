@@ -11,3 +11,7 @@ vale:
 
 cifa:
 -finire partiteWeb e parte giocata schedine
+
+
+todo:
+logo
