@@ -13,10 +13,10 @@ import java.util.Map;
 public interface PartiteWebClient {
 
     @GetMapping("/matches")
-    List<MatchDTO> getMatches(@RequestParam("matchday") int matchday);
+    List<MatchDTO> getMatches(@RequestParam(value = "matchday", required = false) Integer matchday);
 
     @GetMapping("/results")
-    Map<String, Integer> getResults(@RequestParam("matchday") int matchday);
+    Map<String, Integer> getResults(@RequestParam("matchday") Integer matchday);
 
     //get the list of teams from PartiteWeb
     @GetMapping("/teams")
