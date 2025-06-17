@@ -48,7 +48,6 @@ public class SecurityConfig {
                  .requestMatchers("/gameCalendar").hasAnyRole("USER", "MODERATOR")
                  .requestMatchers("/changePassword").hasAnyRole("USER", "MODERATOR")
                  .requestMatchers("/play").hasAnyRole("USER", "MODERATOR")
-                 .requestMatchers("/reviews").hasAnyRole("USER", "MODERATOR")
                  .requestMatchers("/admin/users").hasAnyRole("ADMIN", "MODERATOR")
                  .requestMatchers("/admin/leaderboard").hasAnyRole("ADMIN", "MODERATOR")
                  .requestMatchers("/admin/prizes").hasAnyRole("ADMIN", "MODERATOR")

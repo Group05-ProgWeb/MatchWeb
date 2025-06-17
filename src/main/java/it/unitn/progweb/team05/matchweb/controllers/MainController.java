@@ -128,7 +128,9 @@ public class MainController {
     }
 
     @GetMapping("/sponsors")
-    public String sponsors() {
+    public String sponsors(Authentication authentication, Model model) {
+        model.addAttribute("isLoggedIn", authentication !=  null && authentication.isAuthenticated());
+
         return "sponsors";
     }
 
@@ -151,6 +153,7 @@ public class MainController {
                 .collect(Collectors.toMap(PrizeType::getId, PrizeType::getName));
 
         model.addAttribute("prizes", prizes);
+        model.addAttribute("user", user);
         model.addAttribute("prizeTypeNames", prizeTypeNames);
 
         return "profile";
@@ -179,8 +182,16 @@ public class MainController {
     }
 
     @GetMapping("/reviews")
-    public String comments(Model model) {
+    public String comments(Model model, Authentication authentication) {
         model.addAttribute("reviews", reviewRepository.getAll());
+
+        Map<Integer, String> userMap = userRepository.findAllUsers().stream()
+                .collect(Collectors.toMap(User::getId, User::getUsername));
+
+        model.addAttribute("userMap", userMap);
+
+        model.addAttribute("isLoggedIn", authentication != null && authentication.isAuthenticated());
+
         return "reviews";
     }
 

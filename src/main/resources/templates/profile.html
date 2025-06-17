@@ -15,6 +15,34 @@
     <h1>Profilo</h1>
 
     <section class="my-4">
+        <h3>I tuoi dati</h3>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${user.firstName + ' ' + user.lastName}">Nome Cognome</h5>
+                <p class="card-text mb-1">
+                    <strong>Username:</strong> <span th:text="${user.username}">nomeutente</span>
+                </p>
+                <p class="card-text mb-1">
+                    <strong>Email:</strong> <span th:text="${user.email}">email@example.com</span>
+                </p>
+                <p class="card-text mb-1" th:if="${user.dateOfBirth != null}">
+                    <strong>Data di nascita:</strong>
+                    <span th:text="${#dates.format(user.dateOfBirth, 'dd/MM/yyyy')}">01/01/2000</span>
+                </p>
+                <p class="card-text mb-1" th:if="${user.sport != null && user.sport != ''}">
+                    <strong>Sport preferito:</strong> <span th:text="${user.sport}">Calcio</span>
+                </p>
+                <p class="card-text mb-1" th:if="${user.favoriteTeam != null && user.favoriteTeam != ''}">
+                    <strong>Squadra preferita:</strong> <span th:text="${user.favoriteTeam}">Team</span>
+                </p>
+                <p class="card-text mb-1">
+                    <strong>Punteggio totale:</strong> <span th:text="${user.totalScore}">0</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="my-4">
         <h3>Premi ricevuti</h3>
         <div th:if="${#lists.isEmpty(prizes)}">
             <p>Non hai ancora ricevuto premi.</p>

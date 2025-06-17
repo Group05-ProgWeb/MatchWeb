@@ -18,55 +18,58 @@
         }
         .star-rating .fa-star.selected,
         .star-rating .fa-star.hovered {
-            color: #ffc107; /* Bootstrap's warning color */
+            color: #ffc107;
         }
     </style>
 </head>
-<body>
-<div th:replace="~{fragments/navbar.html :: navbar}"></div>
+<body class="d-flex flex-column min-vh-100">
+<div th:if="${isLoggedIn}">
+    <div th:replace="~{fragments/navbar.html :: navbar}"></div>
+</div>
+
+<div th:unless="${isLoggedIn}">
+    <div th:replace="~{fragments/navbar-anon.html :: navbar-anon}"></div>
+</div>
 
 <main class="container my-5" style="max-width: 800px;">
     <h1 class="mb-4">Recensioni</h1>
 
-
-
-    <!-- Form to add a new review -->
-    <h3 class="mb-3">Inserisci una recensione</h3>
-    <form
-            action="#"
-            th:action="@{/reviews}"
-            method="post"
-            class="needs-validation"
-            novalidate
-    >
-        <div class="mb-4">
-            <div id="starContainer" class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
-                <i class="far fa-star" data-value="1" tabindex="0" role="radio" aria-checked="false" aria-label="1 star"></i>
-                <i class="far fa-star" data-value="2" tabindex="0" role="radio" aria-checked="false" aria-label="2 stars"></i>
-                <i class="far fa-star" data-value="3" tabindex="0" role="radio" aria-checked="false" aria-label="3 stars"></i>
-                <i class="far fa-star" data-value="4" tabindex="0" role="radio" aria-checked="false" aria-label="4 stars"></i>
-                <i class="far fa-star" data-value="5" tabindex="0" role="radio" aria-checked="false" aria-label="5 stars"></i>
+    <div th:if="${isLoggedIn}">
+        <h3 class="mb-3">Inserisci una recensione</h3>
+        <form
+                action="#"
+                th:action="@{/reviews}"
+                method="post"
+                class="needs-validation"
+                novalidate
+        >
+            <div class="mb-4">
+                <div id="starContainer" class="star-rating" role="radiogroup" aria-labelledby="ratingLabel">
+                    <i class="far fa-star" data-value="1" tabindex="0" role="radio" aria-checked="false" aria-label="1 star"></i>
+                    <i class="far fa-star" data-value="2" tabindex="0" role="radio" aria-checked="false" aria-label="2 stars"></i>
+                    <i class="far fa-star" data-value="3" tabindex="0" role="radio" aria-checked="false" aria-label="3 stars"></i>
+                    <i class="far fa-star" data-value="4" tabindex="0" role="radio" aria-checked="false" aria-label="4 stars"></i>
+                    <i class="far fa-star" data-value="5" tabindex="0" role="radio" aria-checked="false" aria-label="5 stars"></i>
+                </div>
+                <input type="hidden" id="rating" name="rating" required>
+                <div class="invalid-feedback">Please enter a rating between 1 and 5.</div>
             </div>
-            <input type="hidden" id="rating" name="rating" required>
-            <div class="invalid-feedback">Please enter a rating between 1 and 5.</div>
-        </div>
-        <div class="mb-3">
-            <textarea
-                    id="comment"
-                    name="comment"
-                    rows="4"
-                    class="form-control"
-                    required
-            ></textarea>
-            <div class="invalid-feedback">Please enter a comment.</div>
-        </div>
+            <div class="mb-3">
+                <textarea
+                        id="comment"
+                        name="comment"
+                        rows="4"
+                        class="form-control"
+                        required
+                ></textarea>
+                <div class="invalid-feedback">Please enter a comment.</div>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Invia</button>
-    </form>
-
+            <button type="submit" class="btn btn-primary">Invia</button>
+        </form>
+    </div>
     <hr/>
 
-    <!-- List existing reviews -->
     <div class="mb-5">
         <div
                 class="card mb-3"
@@ -74,11 +77,17 @@
                 style="max-width: 100%;"
         >
             <div class="card-body">
-                <div>
-            <span th:each="i : ${#numbers.sequence(1,5)}">
-              <i class="fa-star"
-                 th:classappend="${i <= review.score} ? 'fas text-warning' : 'far text-muted'"></i>
-            </span>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <span th:each="i : ${#numbers.sequence(1,5)}">
+                            <i class="fa-star"
+                               th:classappend="${i <= review.score} ? 'fas text-warning' : 'far text-muted'"></i>
+                        </span>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="fas fa-user me-1"></i>
+                        <span th:text="${userMap[review.authorId]}">Username</span>
+                    </div>
                 </div>
                 <p class="card-text mt-2" th:text="${review.text}">Review text here</p>
             </div>
@@ -96,7 +105,6 @@
     (() => {
         "use strict";
 
-        // Bootstrap form validation
         const forms = document.querySelectorAll(".needs-validation");
         Array.from(forms).forEach((form) => {
             form.addEventListener(
@@ -112,7 +120,6 @@
             );
         });
 
-        // Star rating logic
         const stars = document.querySelectorAll("#starContainer i");
         const ratingInput = document.getElementById("rating");
         let selectedRating = 0;
@@ -155,7 +162,6 @@
                 setStars(selectedRating);
             });
 
-            // Accessibility: allow keyboard selection with Enter or Space
             star.addEventListener("keydown", (event) => {
                 if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
