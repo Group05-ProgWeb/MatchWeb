@@ -14,4 +14,19 @@ cifa:
 
 
 todo:
+
+cifa:
 logo
+foto sports su home page
+popup sport non implementati
+mettere squadre vere in signup
+sistemare un attimo i colori
+
+vale:
+frontend /football
+nome e cognome,ecc in schermata profilo
+nome recensioni
+sponsors
+news in basso e pagina centrata
+relazione
+preparazione per deployment e consegna

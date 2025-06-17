@@ -13,7 +13,7 @@ public class MatchService {
 
     private final PartiteWebClient partiteWebClient;
 
-    private static final LocalDate TOURNAMENT_START_DAY = LocalDate.of(2025, 6, 8);
+    private static final LocalDate TOURNAMENT_START_DAY = LocalDate.now();
 
     public MatchService(PartiteWebClient partiteWebClient) {
         this.partiteWebClient = partiteWebClient;
