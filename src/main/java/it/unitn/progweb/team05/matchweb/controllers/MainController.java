@@ -6,7 +6,9 @@ import it.unitn.progweb.team05.matchweb.schemas.*;
 import it.unitn.progweb.team05.matchweb.repositories.*;
 import it.unitn.progweb.team05.matchweb.services.CalcolaPunteggio;
 import it.unitn.progweb.team05.matchweb.services.MatchService;
+import it.unitn.progweb.team05.matchweb.services.Signup;
 import it.unitn.progweb.team05.matchweb.services.UserService;
+import org.springframework.boot.Banner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,6 +35,7 @@ public class MainController {
     private final PartiteWebClient partiteWebClient;
     private final PrizeRepository prizeRepository;
     private final PrizeTypeRepository prizeTypeRepository;
+    private final Signup signup;
 
 
     public MainController(UserRepository userRepository,
@@ -43,7 +46,8 @@ public class MainController {
                           GiornataRepository giornataRepository,
                           PartiteWebClient partiteWebClient,
                           PrizeRepository prizeRepository,
-                          PrizeTypeRepository prizeTypeRepository) {
+                          PrizeTypeRepository prizeTypeRepository,
+                          Signup signup) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.reviewRepository = reviewRepository;
@@ -53,6 +57,7 @@ public class MainController {
         this.partiteWebClient = partiteWebClient;
         this.prizeRepository = prizeRepository;
         this.prizeTypeRepository = prizeTypeRepository;
+        this.signup = signup;
 
     }
 
@@ -77,7 +82,11 @@ public class MainController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestParam("name") String name, @RequestParam("surname") String surname, @RequestParam("dateOfBirth") Date dateOfBirth, @RequestParam("email") String email, @RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("sport") String sport, @RequestParam("favoriteTeam") String favoriteTeam) {
+    public String signup(@RequestParam("name") String name, @RequestParam("surname") String surname, @RequestParam("dateOfBirth") Date dateOfBirth, @RequestParam("email") String email, @RequestParam("username") String username, @RequestParam("password") String password, @RequestParam("sport") String sport, @RequestParam("favoriteTeam") String favoriteTeam, Model model) {
+        if(signup.userExists(username)) {
+            model.addAttribute("existingUserErrorModal", true);
+            return signup(model);
+        }
         User user = new User();
         user.setFirstName(name);
         user.setLastName(surname);
@@ -89,7 +98,7 @@ public class MainController {
         user.setSport(sport);
         user.setFavoriteTeam(favoriteTeam);
         userRepository.add(user);
-        return "redirect:/login";
+        return "signup-success";
     }
 
     @GetMapping("/login")
@@ -107,9 +116,9 @@ public class MainController {
     }
 
     @PostMapping("/change-password")
-    public String changePassword(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword) {
-        userService.changePassword(oldPassword, newPassword);
-        return "redirect:/";
+    public String changePassword(@RequestParam("oldPassword") String oldPassword, @RequestParam("newPassword") String newPassword, Authentication authentication, Model model) {
+        model.addAttribute("changedPasswordModal", true);
+        return dashboard(authentication, model);
     }
 
     @GetMapping("/football")
@@ -235,7 +244,6 @@ public class MainController {
     @PostMapping("/admin/prizes")
     @ResponseBody
     public ResponseEntity<List<String>> assignPrizes() {
-        // get top 3 users ordered by score descending
         List<User> topUsers = userRepository.findAllUsersOrderByScoreDesc()
                 .stream().limit(3).toList();
 

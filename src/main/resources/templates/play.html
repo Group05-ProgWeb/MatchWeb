@@ -1,91 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Gioca schedina</title>
-    <script th:inline="javascript">
-            function sendBets() {
-                const matchday = [[${matchday}]]
-                const table = document.querySelectorAll('#bets-body tr');
-                let bets = [];
-
-                table.forEach(row => {
-                    const matchId = row.dataset.matchId;
-                    const prediction = parseInt(row.querySelector('input').value);
-                    bets.push({ matchId: matchId, prediction: prediction });
-                });
-
-                fetch('/play', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ matchday: matchday, bets: bets })
-                })
-                    .then(response => {
-                        if(!response.ok) {
-                            throw Error("Schedina già inviata oggi!")
-                        } else {
-                            return response.json()
-                        }
-                    })
-                    .then(betresult => {
-                        document.getElementById('result').innerText = "Schedina inviata! Punteggio: " + betresult.score;
-                        addResults()
-                    })
-                    .catch((err) => alert(err.message));
-            }
-
-        function addResults() {
-            fetch('http://localhost:8085/api/results?matchday=' + [[${matchday}]], {
-                    method: "GET",
-                    headers: { 'Content-Type': 'application/json' }
-                })
-                .then(response => response.json())
-                .then(results => {
-                    const headers = document.querySelector('#bets-headers')
-                    const resultsHeader = document.createElement('th');
-                    resultsHeader.textContent = "Risultati";
-                    headers.appendChild(resultsHeader)
-
-                    const table = document.querySelectorAll('#bets-body tr');
-                    table.forEach(row => {
-                        const matchId = row.dataset.matchId;
-                        const cell = document.createElement('td');
-                        cell.innerText = results[matchId];
-                        row.appendChild(cell);
-                    });
-                });
-        }
-    </script>
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
             rel="stylesheet"
     />
+    <script th:inline="javascript">
+        function sendBets() {
+            const matchday = [[${matchday}]]
+            const table = document.querySelectorAll('#bets-body tr');
+            let bets = [];
+
+            table.forEach(row => {
+                const matchId = row.dataset.matchId;
+                const prediction = parseInt(row.querySelector('input').value);
+                bets.push({ matchId: matchId, prediction: prediction });
+            });
+
+            fetch('/play', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ matchday: matchday, bets: bets })
+            })
+                .then(response => {
+                    if(!response.ok) {
+                        throw Error("Schedina già inviata oggi!")
+                    } else {
+                        return response.json()
+                    }
+                })
+                .then(betresult => {
+                    document.getElementById('result').innerText = "Schedina inviata! Punteggio: " + betresult.score;
+                    addResults()
+                })
+                .catch((err) => {
+                    const errorModalEl = document.getElementById('errorModal');
+                    const errorModalBody = document.getElementById('errorModalBody');
+                    errorModalBody.textContent = err.message;
+                    const modal = new bootstrap.Modal(errorModalEl);
+                    modal.show();
+                });
+        }
+
+        function addResults() {
+            fetch('http://localhost:8085/api/results?matchday=' + [[${matchday}]], {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(response => response.json())
+                .then(results => {
+                    const headers = document.querySelector('#bets-headers')
+                    if (!document.getElementById('resultsHeader')) {
+                        const resultsHeader = document.createElement('th');
+                        resultsHeader.textContent = "Risultati";
+                        resultsHeader.id = "resultsHeader";
+                        headers.appendChild(resultsHeader);
+                    }
+
+                    const table = document.querySelectorAll('#bets-body tr');
+                    table.forEach(row => {
+                        const matchId = row.dataset.matchId;
+                        let existingCell = row.querySelector('.result-cell');
+                        if (!existingCell) {
+                            const cell = document.createElement('td');
+                            cell.className = 'result-cell';
+                            cell.innerText = results[matchId];
+                            row.appendChild(cell);
+                        }
+                    });
+                });
+        }
+    </script>
 </head>
 <body>
-    <div th:replace="~{fragments/navbar.html :: navbar}"></div>
+<div th:replace="~{fragments/navbar.html :: navbar}"></div>
+
+<div class="container text-center mt-4">
     <h1>Gioca schedina</h1>
 
     <p>Oggi è la giornata <span th:text="${matchday}"></span> del torneo</p>
 
-    <table>
+    <table class="table table-bordered mx-auto" style="max-width: 600px;">
         <thead>
-            <tr id="bets-headers">
-                <th>Casa</th>
-                <th>Ospite</th>
-                <th>Pronostico</th>
-            </tr>
+        <tr id="bets-headers">
+            <th>Casa</th>
+            <th>Ospite</th>
+            <th>Pronostico</th>
+        </tr>
         </thead>
         <tbody id="bets-body">
-            <tr th:each="m : ${matches}" th:data-match-id="${m.getMatchId()}">
-                <td th:text="${m.getHome().getName()}">Casa</td>
-                <td th:text="${m.getAway().getName()}">Ospite</td>
-                <td><input type="text" maxlength="1" /></td>
-            </tr>
+        <tr th:each="m : ${matches}" th:data-match-id="${m.getMatchId()}">
+            <td th:text="${m.getHome().getName()}">Casa</td>
+            <td th:text="${m.getAway().getName()}">Ospite</td>
+            <td><input type="text" maxlength="1" class="form-control text-center" /></td>
+        </tr>
         </tbody>
     </table>
 
-    <button onclick="sendBets()">Gioca schedina</button>
+    <button onclick="sendBets()" class="btn btn-primary">Gioca schedina</button>
 
-    <p id="result"></p>
+    <p id="result" class="mt-3"></p>
+</div>
+
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Errore</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

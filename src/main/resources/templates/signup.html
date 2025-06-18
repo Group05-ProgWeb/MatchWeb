@@ -49,8 +49,30 @@
               name="dateOfBirth"
               required
       />
-      <div class="invalid-feedback">Inserisci la data di nascita.</div>
+      <div class="invalid-feedback">Devi avere almeno 18 anni.</div>
     </div>
+
+    <script>
+      const dateOfBirthInput = document.getElementById('dateOfBirth');
+
+      dateOfBirthInput.addEventListener('input', function () {
+        const dob = new Date(this.value);
+        const today = new Date();
+
+        const eighteenYearsAgo = new Date(
+                today.getFullYear() - 18,
+                today.getMonth(),
+                today.getDate()
+        );
+
+        if (dob > eighteenYearsAgo) {
+          this.setCustomValidity("Devi avere almeno 18 anni.");
+        } else {
+          this.setCustomValidity("");
+        }
+      });
+    </script>
+
 
     <div class="mb-3">
       <label for="email" class="form-label">Email</label>
@@ -84,23 +106,66 @@
               class="form-control"
               id="password"
               name="password"
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              pattern="^(?=(?:.*\d){2})(?=.*[^A-Za-z0-9]).{9}$"
               required
       />
       <div class="form-text">
-        La password deve contenere almeno 8 caratteri, una lettera maiuscola, una minuscola e un numero.
+        La password deve essere lunga 9 caratteri di cui uno speciale e due cifre.
       </div>
       <div class="invalid-feedback">Inserisci una password valida.</div>
     </div>
 
     <div class="mb-3">
-      <label for="sport" class="form-label">Seleziona uno sport:</label>
-      <select id="sport" name="sport" class="form-select">
-        <option value="Calcio">Calcio</option>
-        <option value="Basket" disabled>Basket</option>
-        <option value="Pallavvolo" disabled>Pallavvolo</option>
-      </select>
+      <label for="confirmPassword" class="form-label">Conferma Password</label>
+      <input
+              type="password"
+              class="form-control"
+              id="confirmPassword"
+              name="confirmPassword"
+              required
+      />
+      <div class="invalid-feedback">Le password non corrispondono.</div>
     </div>
+
+    <script>
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
+
+      confirmPassword.addEventListener('input', () => {
+        if (confirmPassword.value !== password.value) {
+          confirmPassword.setCustomValidity("Le password non corrispondono.");
+        } else {
+          confirmPassword.setCustomValidity("");
+        }
+      });
+    </script>
+
+
+    <div class="mb-3">
+      <label for="sport" class="form-label">Seleziona uno sport:</label>
+      <select id="sport" name="sport" class="form-select" required>
+        <option value="">-- Seleziona uno sport --</option>
+        <option value="Calcio">Calcio</option>
+        <option value="Basket">Basket</option>
+        <option value="Pallavvolo">Pallavvolo</option>
+      </select>
+      <div class="invalid-feedback">Solo il calcio è disponibile al momento.</div>
+    </div>
+
+    <script>
+      const sportSelect = document.getElementById('sport');
+
+      sportSelect.addEventListener('change', function () {
+        const invalidOptions = ['Basket', 'Pallavvolo'];
+
+        if (invalidOptions.includes(this.value)) {
+          this.setCustomValidity("Solo il Calcio è disponibile al momento.");
+        } else {
+          this.setCustomValidity("");
+        }
+      });
+    </script>
+
 
     <div class="mb-3">
       <label for="favoriteTeam" class="form-label">Seleziona una squadra preferita:</label>
@@ -127,7 +192,6 @@
 ></script>
 
 <script>
-  // Bootstrap validation
   (() => {
     'use strict';
     const forms = document.querySelectorAll('.needs-validation');
@@ -145,6 +209,51 @@
       );
     });
   })();
+</script>
+
+<div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Attenzione</h5>
+        <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Il nome utente inserito è già in utilizzo, inseriscine un altro.
+      </div>
+      <div class="modal-footer">
+        <button
+                type="button"
+                class="btn btn-danger "
+                data-bs-dismiss="modal"
+        >
+          Ok
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  let existingUserErrorModal = /*[[${existingUserErrorModal}]]*/ false;
+  if (existingUserErrorModal) {
+    let modalElement = document.getElementById('exampleModal');
+    let modal = new bootstrap.Modal(modalElement);
+    modal.show();
+  }
+  /*]]>*/
 </script>
 </body>
 </html>

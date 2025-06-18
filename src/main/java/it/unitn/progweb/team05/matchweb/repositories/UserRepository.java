@@ -39,10 +39,6 @@ public class UserRepository {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean userExists(String username) {
-        return userDetailsManager.userExists(username);
-    }
-
     public List<User> findAllUsers() {
         String sql = "SELECT * FROM USER_DETAILS ORDER BY FIRST_NAME ASC";
         return jdbc.query(sql, userRowMapper);

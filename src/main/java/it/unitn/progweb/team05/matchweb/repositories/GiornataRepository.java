@@ -13,6 +13,7 @@ public class GiornataRepository {
     private RowMapper<Giornata> giornataRowMapper = (r, i) -> {
         Giornata rowObject = new Giornata();
         rowObject.setMatchday(r.getInt("MATCHDAY"));
+        rowObject.setUsername(r.getString("USERNAME"));
         return rowObject;
     };
 
@@ -21,13 +22,13 @@ public class GiornataRepository {
     }
 
     public void add(Giornata giornata) {
-        String sql = "INSERT INTO GIORNATE VALUES (?)";
-        jdbc.update(sql, giornata.getMatchday());
+        String sql = "INSERT INTO GIORNATE VALUES (?, ?)";
+        jdbc.update(sql, giornata.getUsername(), giornata.getMatchday());
     }
 
-    public boolean exists(int matchday) {
-        String sql = "SELECT * FROM GIORNATE WHERE matchday = ?";
-        return !jdbc.query(sql, giornataRowMapper, matchday).isEmpty();
+    public boolean exists(String username, int matchday) {
+        String sql = "SELECT * FROM GIORNATE WHERE USERNAME = ? AND matchday = ?";
+        return !jdbc.query(sql, giornataRowMapper, username, matchday).isEmpty();
 
     }
 }

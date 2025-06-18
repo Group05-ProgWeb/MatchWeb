@@ -10,6 +10,7 @@ import it.unitn.progweb.team05.matchweb.repositories.GiornataRepository;
 import it.unitn.progweb.team05.matchweb.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,19 +21,25 @@ public class CalcolaPunteggio {
     private final PartiteWebClient partiteWebClient;
     private final GiornataRepository giornataRepository;
     private final UserRepository userRepository;
+    private final UserDetailsManager userDetailsManager;
 
 
-    public CalcolaPunteggio(PartiteWebClient partiteWebClient, GiornataRepository giornataRepository, UserRepository userRepository) {
+    public CalcolaPunteggio(PartiteWebClient partiteWebClient,
+                            GiornataRepository giornataRepository,
+                            UserRepository userRepository,
+                            UserDetailsManager userDetailsManager) {
         this.partiteWebClient = partiteWebClient;
         this.giornataRepository = giornataRepository;
         this.userRepository = userRepository;
+        this.userDetailsManager = userDetailsManager;
     }
 
     public BetSlipResult evaluateBetSlip(BetSlip betSlip) throws MultipleBetslipsException {
-        if(giornataRepository.exists(betSlip.getMatchday())) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(giornataRepository.exists(authentication.getName(), betSlip.getMatchday())) {
             throw new MultipleBetslipsException();
         } else {
-            giornataRepository.add(new Giornata(betSlip.getMatchday()));
+            giornataRepository.add(new Giornata(authentication.getName(), betSlip.getMatchday()));
             Map<String, Integer> results = partiteWebClient.getResults(betSlip.getMatchday());
             int score = 0;
             for(SingleBet b : betSlip.getBets()){
@@ -40,8 +47,6 @@ public class CalcolaPunteggio {
                     score++;
                 }
             }
-
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             userRepository.updateScoreByUsername(authentication.getName(), userRepository.get(authentication.getName()).getTotalScore() + score);
 

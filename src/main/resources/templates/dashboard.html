@@ -12,29 +12,114 @@
 <div class="container mt-4">
     <h1 class="mb-4">Ciao, <span th:text="${firstName}">User</span>!</h1>
 
+    <p th:text="${changePasswordModal}"></p>
+
     <div class="mb-4">
-        <a href="/profile" class="btn btn-primary me-2 mb-2">Visualizza Profilo</a>
-        <a href="/game-calendar" class="btn btn-secondary me-2 mb-2">Visualizza Calendario Partite</a>
         <a href="/play" class="btn btn-success me-2 mb-2">Gioca Schedina</a>
+        <a href="/game-calendar" class="btn btn-secondary me-2 mb-2">Visualizza Calendario Partite</a>
+        <a href="/profile" class="btn btn-primary me-2 mb-2">Visualizza Profilo</a>
         <a href="/reviews" class="btn btn-info mb-2">Recensioni</a>
     </div>
 
-    <div class="card" style="max-width: 400px;">
+    <div class="card mt-5" style="max-width: 400px;">
         <div class="card-body">
             <h5 class="card-title">Cambia Password</h5>
-            <form action="/change-password" method="post">
-                <div class="mb-3">
-                    <label for="oldPassword" class="form-label">Vecchia password</label>
-                    <input id="oldPassword" name="oldPassword" type="password" class="form-control" required />
-                </div>
+            <form id="changePasswordForm" action="/change-password" method="post" novalidate>
                 <div class="mb-3">
                     <label for="newPassword" class="form-label">Nuova password</label>
-                    <input id="newPassword" name="newPassword" type="password" class="form-control" required />
+                    <input
+                            id="newPassword"
+                            name="newPassword"
+                            type="password"
+                            class="form-control"
+                            pattern="^(?=(?:.*\d){2})(?=.*[^A-Za-z0-9]).{9}$"
+                            required
+                    />
+                    <div class="invalid-feedback">La password deve essere lunga 9 caratteri con almeno 2 cifre e 1 carattere speciale.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Conferma nuova password</label>
+                    <input
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            type="password"
+                            class="form-control"
+                            required
+                    />
+                    <div class="invalid-feedback">Le password non corrispondono.</div>
                 </div>
                 <button type="submit" class="btn btn-danger">Cambia password</button>
             </form>
         </div>
     </div>
+
+    <div
+            class="modal fade"
+            id="successModal"
+            tabindex="-1"
+            aria-labelledby="successModalLabel"
+            aria-hidden="true"
+    >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Successo</h5>
+                    <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Chiudi"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    La password è stata cambiata con successo!
+                </div>
+                <div class="modal-footer">
+                    <button
+                            type="button"
+                            class="btn btn-primary"
+                            data-bs-dismiss="modal"
+                    >
+                        Ok
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const changedPasswordModal = /*[[${changedPasswordModal}]]*/ false;
+
+        if (changedPasswordModal) {
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            successModal.show();
+        }
+
+        (() => {
+            const form = document.getElementById('changePasswordForm');
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+
+            form.addEventListener('submit', function(event) {
+                confirmPassword.setCustomValidity('');
+
+                if (confirmPassword.value !== newPassword.value) {
+                    confirmPassword.setCustomValidity('Le password non corrispondono.');
+                }
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            });
+        })();
+        /*]]>*/
+    </script>
 </div>
 </body>
 </html>

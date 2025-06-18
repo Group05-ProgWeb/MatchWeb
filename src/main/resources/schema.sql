@@ -33,11 +33,15 @@ CREATE TABLE IF NOT EXISTS REVIEWS(
     score INT
 );
 
-CREATE TABLE IF NOT EXISTS GIORNATE(
-    matchday INT PRIMARY KEY
+CREATE TABLE IF NOT EXISTS GIORNATE (
+    username VARCHAR(50) NOT NULL,
+    matchday INT NOT NULL,
+    PRIMARY KEY (username, matchday),
+    CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES USERS (username)
 );
 
-DROP TABLE IF EXISTS prizes_types;
+
+
 
 CREATE TABLE IF NOT EXISTS prize_types (
      id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -53,10 +57,23 @@ CREATE TABLE IF NOT EXISTS prizes (
     CONSTRAINT fk_prize_type FOREIGN KEY (prize_type_id) REFERENCES prize_types(id)
 );
 
-INSERT INTO prize_types (name) VALUES
-   ('Biglietto Partita Squadra del cuore'),
-   ('Magletta Giocatore Squadra del cuore'),
-   ('Serata in pizzera con la squadra del cuore');
+INSERT INTO prize_types (name)
+SELECT 'Biglietto Partita Squadra del cuore'
+WHERE NOT EXISTS (
+    SELECT 1 FROM prize_types WHERE name = 'Biglietto Partita Squadra del cuore'
+);
+
+INSERT INTO prize_types (name)
+SELECT 'Magletta Giocatore Squadra del cuore'
+WHERE NOT EXISTS (
+    SELECT 1 FROM prize_types WHERE name = 'Magletta Giocatore Squadra del cuore'
+);
+
+INSERT INTO prize_types (name)
+SELECT 'Serata in pizzera con la squadra del cuore'
+WHERE NOT EXISTS (
+    SELECT 1 FROM prize_types WHERE name = 'Serata in pizzera con la squadra del cuore'
+);
 
 DROP TABLE IF EXISTS news;
 
