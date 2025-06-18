@@ -97,15 +97,19 @@
       <label for="sport" class="form-label">Seleziona uno sport:</label>
       <select id="sport" name="sport" class="form-select">
         <option value="Calcio">Calcio</option>
-        <option value="Basket">Basket</option>
-        <option value="Pallavvolo">Pallavvolo</option>
+        <option value="Basket" disabled>Basket</option>
+        <option value="Pallavvolo" disabled>Pallavvolo</option>
       </select>
     </div>
 
     <div class="mb-3">
       <label for="favoriteTeam" class="form-label">Seleziona una squadra preferita:</label>
       <select id="favoriteTeam" name="favoriteTeam" class="form-select">
-        <option value="I fantastici">I fantastici</option>
+        <option value="" disabled selected>-- Seleziona --</option>
+        <option th:each="team : ${teams}"
+                th:value="${team.getName()}"
+                th:text="${team.getName()}">
+        </option>
       </select>
     </div>
 

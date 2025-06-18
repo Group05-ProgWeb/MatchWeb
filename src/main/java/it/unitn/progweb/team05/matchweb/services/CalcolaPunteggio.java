@@ -1,17 +1,15 @@
 package it.unitn.progweb.team05.matchweb.services;
 
 import it.unitn.progweb.team05.matchweb.exceptions.MultipleBetslipsException;
-import it.unitn.progweb.team05.matchweb.models.BetSlip;
-import it.unitn.progweb.team05.matchweb.models.BetSlipResult;
-import it.unitn.progweb.team05.matchweb.models.Giornata;
-import it.unitn.progweb.team05.matchweb.models.SingleBet;
+import it.unitn.progweb.team05.matchweb.schemas.BetSlip;
+import it.unitn.progweb.team05.matchweb.schemas.BetSlipResult;
+import it.unitn.progweb.team05.matchweb.schemas.Giornata;
+import it.unitn.progweb.team05.matchweb.schemas.SingleBet;
 import it.unitn.progweb.team05.matchweb.feign.PartiteWebClient;
 import it.unitn.progweb.team05.matchweb.repositories.GiornataRepository;
 import it.unitn.progweb.team05.matchweb.repositories.UserRepository;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

@@ -17,10 +17,10 @@ todo:
 
 cifa:
 logo
-foto sports su home page
+foto sports su home page ok
 popup sport non implementati
-mettere squadre vere in signup
-sistemare un attimo i colori
+mettere squadre vere in signup ok
+sistemare un attimo i colori ok
 
 vale:
 frontend /football

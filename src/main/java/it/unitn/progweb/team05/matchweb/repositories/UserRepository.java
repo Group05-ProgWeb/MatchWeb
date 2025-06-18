@@ -1,7 +1,7 @@
 package it.unitn.progweb.team05.matchweb.repositories;
 
-import it.unitn.progweb.team05.matchweb.models.SecurityUser;
-import it.unitn.progweb.team05.matchweb.models.User;
+import it.unitn.progweb.team05.matchweb.schemas.SecurityUser;
+import it.unitn.progweb.team05.matchweb.schemas.User;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

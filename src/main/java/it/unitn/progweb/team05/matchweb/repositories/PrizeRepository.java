@@ -1,6 +1,6 @@
 package it.unitn.progweb.team05.matchweb.repositories;
 
-import it.unitn.progweb.team05.matchweb.models.Prize;
+import it.unitn.progweb.team05.matchweb.schemas.Prize;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;

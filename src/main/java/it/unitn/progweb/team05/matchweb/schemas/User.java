@@ -1,4 +1,4 @@
-package it.unitn.progweb.team05.matchweb.models;
+package it.unitn.progweb.team05.matchweb.schemas;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,6 +1,6 @@
 package it.unitn.progweb.team05.matchweb.services;
 
-import it.unitn.progweb.team05.matchweb.models.MatchDTO;
+import it.unitn.progweb.team05.matchweb.schemas.MatchDTO;
 import it.unitn.progweb.team05.matchweb.feign.PartiteWebClient;
 import org.springframework.stereotype.Service;
 

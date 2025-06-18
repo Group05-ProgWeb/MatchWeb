@@ -2,7 +2,7 @@ package it.unitn.progweb.team05.matchweb.controllers;
 
 import it.unitn.progweb.team05.matchweb.exceptions.MultipleBetslipsException;
 import it.unitn.progweb.team05.matchweb.feign.PartiteWebClient;
-import it.unitn.progweb.team05.matchweb.models.*;
+import it.unitn.progweb.team05.matchweb.schemas.*;
 import it.unitn.progweb.team05.matchweb.repositories.*;
 import it.unitn.progweb.team05.matchweb.services.CalcolaPunteggio;
 import it.unitn.progweb.team05.matchweb.services.MatchService;
@@ -71,7 +71,8 @@ public class MainController {
     }
 
     @GetMapping("/signup")
-    public String signup() {
+    public String signup(Model model) {
+        model.addAttribute("teams", partiteWebClient.getTeams());
         return "signup";
     }
 

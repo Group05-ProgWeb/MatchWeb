@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<body>
-<div th:fragment="footer">
-    <footer>
-        <p>
-            Indirizzo sede legale: via Madruzzo, 27
-        <br>
-            P. IVA: 00101010100101
-        </p>
-        <p><a href="mailto:hege@example.com">hege@example.com</a></p>
-    </footer>
-</div>
-</body>
-</html>
+<footer class="bg-light text-center text-lg-start border-top pt-3" th:fragment="footer">
+    <div class="container">
+        <div class="row text-start">
+            <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase">Contatti</h6>
+                <p class="mb-1">Indirizzo sede legale: via Cristoforo Madruzzo, 27 · 38122, Trento TN</p>
+                <p class="mb-0">P. IVA: 12345678901</p>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h6 class="text-uppercase">Email</h6>
+                <a href="mailto:info@matchweb.com" class="text-decoration-none text-dark">info@matchweb.com</a>
+            </div>
+        </div>
+        <div class="text-center text-muted small py-2 border-top">
+            &copy; MatchWeb
+        </div>
+    </div>
+</footer>

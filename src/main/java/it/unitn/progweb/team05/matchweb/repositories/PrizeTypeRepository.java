@@ -1,6 +1,6 @@
 package it.unitn.progweb.team05.matchweb.repositories;
 
-import it.unitn.progweb.team05.matchweb.models.PrizeType;
+import it.unitn.progweb.team05.matchweb.schemas.PrizeType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
